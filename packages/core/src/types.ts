@@ -167,6 +167,7 @@ export type GlobalEventCallback<TEventName extends GlobalEventNames> = (
 
 export type VisitOptions = Partial<
   Visit & {
+    visitPage: boolean;
     onCancelToken: { ({ cancel }: { cancel: VoidFunction }): void }
     onBefore: GlobalEventCallback<'before'>
     onStart: GlobalEventCallback<'start'>

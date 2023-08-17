@@ -16,6 +16,7 @@ import { objectToFormData } from './formData'
 import modal from './modal'
 import {
   ActiveVisit,
+  Errors,
   GlobalEvent,
   GlobalEventNames,
   GlobalEventResult,
@@ -257,6 +258,7 @@ export class Router {
       method = 'get',
       data = {},
       replace = false,
+      visitPage = true,
       preserveScroll = false,
       preserveState = false,
       only = [],
@@ -316,6 +318,7 @@ export class Router {
     const visitId = this.createVisitId()
     this.activeVisit = {
       ...visit,
+      visitPage,
       onCancelToken,
       onBefore,
       onStart,
@@ -368,6 +371,10 @@ export class Router {
       },
     })
       .then((response) => {
+        if (visitPage === false) {
+          return onSuccess(response as unknown as Page);
+        }
+
         if (!this.isInertiaResponse(response)) {
           return Promise.reject({ response })
         }
@@ -390,6 +397,10 @@ export class Router {
         return this.setPage(pageResponse, { visitId, replace, preserveScroll, preserveState })
       })
       .then(() => {
+        if (visitPage === false) {
+          return;
+        }
+
         const errors = this.page.props.errors || {}
         if (Object.keys(errors).length > 0) {
           const scopedErrors = errorBag ? (errors[errorBag] ? errors[errorBag] : {}) : errors
@@ -400,6 +411,10 @@ export class Router {
         return onSuccess(this.page)
       })
       .catch((error) => {
+        if (visitPage === false) {
+          return onError(error.response as unknown as Errors);
+        }
+
         if (this.isInertiaResponse(error.response)) {
           return this.setPage(error.response.data, { visitId })
         } else if (this.isLocationVisitResponse(error.response)) {

@@ -45,7 +45,7 @@
   },
   "scripts": {
     "dev": "./build.js --watch",
-    "build": "npm run clean && ./build.js && tsc --emitDeclarationOnly",
+    "build": "npm run clean && node ./build.js && tsc --emitDeclarationOnly",
     "clean": "rm -rf types && rm -rf dist",
     "prepublishOnly": "npm run build"
   },
